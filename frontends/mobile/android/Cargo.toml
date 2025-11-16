@@ -1,7 +1,13 @@
 [package]
-name = "lingcode-rime-android"
+name = "lingcode_frontend_android"
 version = "0.1.0"
 edition = "2021"
+license = "Apache-2.0"
+
+[lib]
+name = "lingcode_frontend_android"
+path = "src/lib.rs"
+crate-type = ["rlib"]
 
 [dependencies]
-jni = "0.19"
+lingcode-core = { path = "../../../crates/core" }

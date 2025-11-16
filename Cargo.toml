@@ -1,10 +1,35 @@
-[package]
-name = "lingcode-rime-rs"
+[workspace]
+members = [
+    "crates/core",
+    "crates/engine",
+    "crates/pinyin",
+    "crates/double-pinyin",
+    "crates/dict",
+    "crates/converters",
+    "crates/ffi",
+    "frontends/desktop/windows",
+    "frontends/desktop/macos",
+    "frontends/desktop/linux",
+    "frontends/mobile/android",
+    "frontends/mobile/ios"
+]
+
+resolver = "2"
+
+[workspace.package]
 version = "0.1.0"
 edition = "2021"
+authors = ["LingCode Contributors"]
+license = "Apache-2.0"
+repository = "https://github.com/yourusername/LingCode"
 
-[dependencies]
-# Add your dependencies here
-
-[lib]
-crate-type = ["cdylib", "rlib"]
+[workspace.dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.9"
+serde_json = "1.0"
+nom = "7.1"
+lazy_static = "1.4"
+thiserror = "1.0"
+anyhow = "1.0"
+log = "0.4"
+env_logger = "0.11"

@@ -1,13 +1,13 @@
 [package]
-name = "lingcode-rime-windows"
+name = "lingcode_frontend_windows"
 version = "0.1.0"
 edition = "2021"
-
-[dependencies]
-# Add dependencies specific to the Windows frontend here
-# For example:
-# winit = "0.25"  # Window creation and event handling
-# glutin = "0.26" # OpenGL context creation and management
+license = "Apache-2.0"
 
 [lib]
-crate-type = ["cdylib"]
+name = "lingcode_frontend_windows"
+path = "src/lib.rs"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+lingcode-core = { path = "../../../crates/core" }

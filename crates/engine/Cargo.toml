@@ -1,12 +1,18 @@
 [package]
-name = "engine"
-version = "0.1.0"
-edition = "2021"
+name = "lingcode-engine"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
 
 [dependencies]
-core = { path = "../core" }
-pinyin = { path = "../pinyin" }
+lingcode-core = { path = "../core" }
+lingcode-pinyin = { path = "../pinyin" }
 double-pinyin = { path = "../double-pinyin" }
 dict = { path = "../dict" }
 converters = { path = "../converters" }
 ffi = { path = "../ffi" }
+
+[lib]
+name = "lingcode_engine"
+path = "src/lib.rs"

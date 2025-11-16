@@ -1,9 +1,18 @@
 [package]
-name = "pinyin"
-version = "0.1.0"
-edition = "2021"
+name = "lingcode-pinyin"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
 
 [dependencies]
-# Add dependencies here, for example:
-# serde = { version = "1.0", features = ["derive"] }
-# This is where you can specify dependencies for the pinyin crate.
+lingcode-core = { path = "../core" }
+serde.workspace = true
+serde_yaml.workspace = true
+log.workspace = true
+lazy_static.workspace = true
+thiserror.workspace = true
+
+[lib]
+name = "lingcode_pinyin"
+path = "src/lib.rs"

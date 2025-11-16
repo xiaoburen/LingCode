@@ -1,16 +1,13 @@
 [package]
-name = "lingcode-rime-linux"
+name = "lingcode_frontend_linux"
 version = "0.1.0"
 edition = "2021"
-
-[dependencies]
-lingcode-rime-core = { path = "../../crates/core" }
-lingcode-rime-engine = { path = "../../crates/engine" }
-lingcode-rime-pinyin = { path = "../../crates/pinyin" }
-lingcode-rime-double-pinyin = { path = "../../crates/double-pinyin" }
-lingcode-rime-dict = { path = "../../crates/dict" }
-lingcode-rime-converters = { path = "../../crates/converters" }
-lingcode-rime-ffi = { path = "../../crates/ffi" }
+license = "Apache-2.0"
 
 [lib]
-crate-type = ["cdylib"]
+name = "lingcode_frontend_linux"
+path = "src/lib.rs"
+crate-type = ["rlib"]
+
+[dependencies]
+lingcode-core = { path = "../../../crates/core" }
