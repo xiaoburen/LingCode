@@ -15,7 +15,7 @@ impl Engine {
         }
     }
 
-    pub fn process_input(&mut self, input: &str) {
+    pub fn process_input(&mut self, _input: &str) {
         // Process the input and update the state
     }
 
