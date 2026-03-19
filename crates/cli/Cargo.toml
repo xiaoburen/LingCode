@@ -1,0 +1,26 @@
+[package]
+name = "lingcode-cli"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "lingcode"
+path = "src/main.rs"
+
+[dependencies]
+lingcode-core = { path = "../../crates/core" }
+lingcode-engine = { path = "../../crates/engine" }
+lingcode-pinyin = { path = "../../crates/pinyin" }
+
+anyhow = { workspace = true }
+log = { workspace = true }
+env_logger = { workspace = true }
+
+# CLI 依赖
+crossterm = "0.27"
+ratatui = "0.24"
+
+[dev-dependencies]

@@ -7,6 +7,7 @@ members = [
     "crates/dict",
     "crates/converters",
     "crates/ffi",
+    "crates/cli",
     "frontends/desktop/windows",
     "frontends/desktop/macos",
     "frontends/desktop/linux",
