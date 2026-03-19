@@ -1,6 +1,6 @@
 //! 简体拼音引擎实现
 //!
-//! 提供基于拼音的汉字输入支持
+//! 提供基于拼音的汉字输入支持，集成用户词频学习
 
 use crate::PinyinEngine;
 use lingcode_core::{
@@ -8,7 +8,7 @@ use lingcode_core::{
     error::{Result},
     types::SchemeType,
 };
-use lingcode_dict::{RimeDictLoader, DictStats};
+use lingcode_dict::{RimeDictLoader, DictStats, UserDict};
 use std::collections::HashMap;
 use std::path::Path;
 
@@ -22,6 +22,10 @@ pub struct SimplifiedPinyinEngine {
     dict_path: Option<String>,
     /// 是否已加载外部词库
     has_external_dict: bool,
+    /// 用户词频数据库
+    user_dict: Option<UserDict>,
+    /// 用户词库路径
+    user_dict_path: Option<String>,
 }
 
 impl SimplifiedPinyinEngine {
@@ -32,6 +36,8 @@ impl SimplifiedPinyinEngine {
             rime_loader: None,
             dict_path: None,
             has_external_dict: false,
+            user_dict: None,
+            user_dict_path: None,
         };
         engine.load_builtin_dict();
         engine
@@ -42,6 +48,53 @@ impl SimplifiedPinyinEngine {
         let mut engine = Self::new();
         engine.load_rime_dicts(dict_dir);
         engine
+    }
+
+    /// 启用用户词频学习
+    pub fn with_user_dict(mut self, path: &str) -> Self {
+        self.load_user_dict(path);
+        self
+    }
+
+    /// 加载用户词库
+    pub fn load_user_dict(&mut self, path: &str) {
+        let dict_path = Path::new(path);
+        match UserDict::load_from_file(dict_path) {
+            Ok(dict) => {
+                let stats = dict.stats();
+                log::info!("已加载用户词库: {} 条记录", stats.total_records);
+                self.user_dict = Some(dict);
+                self.user_dict_path = Some(path.to_string());
+            }
+            Err(e) => {
+                log::warn!("加载用户词库失败: {}, 将创建新词库", e);
+                self.user_dict = Some(UserDict::new());
+                self.user_dict_path = Some(path.to_string());
+            }
+        }
+    }
+
+    /// 记录用户使用某个词条
+    pub fn record_usage(&mut self, text: &str, pinyin: &str) {
+        if let Some(ref mut dict) = self.user_dict {
+            dict.record_usage(text, pinyin);
+            log::debug!("记录词频: {} ({})", text, pinyin);
+        }
+    }
+
+    /// 保存用户词库
+    pub fn save_user_dict(&self) -> anyhow::Result<()> {
+        if let (Some(ref dict), Some(ref path)) = (&self.user_dict, self.user_dict_path.as_ref()) {
+            let dict_path = Path::new(path);
+            dict.save_to_file(dict_path)?;
+            log::info!("用户词库已保存到: {}", path);
+        }
+        Ok(())
+    }
+
+    /// 获取用户词库统计
+    pub fn user_dict_stats(&self) -> Option<lingcode_dict::UserDictStats> {
+        self.user_dict.as_ref().map(|d| d.stats())
     }
 
     /// 加载雾凇拼音多词库
@@ -228,43 +281,64 @@ impl PinyinEngine for SimplifiedPinyinEngine {
 
     fn get_candidates(&self, pinyin: &str) -> Result<Candidates> {
         let mut candidates = Candidates::new();
+        let mut scored_candidates: Vec<(Candidate, f64)> = Vec::new();
         
-        // 优先从雾凇拼音词库查询
+        // 1. 从用户词库查询（最高优先级）
+        if let Some(ref user_dict) = self.user_dict {
+            let user_results = user_dict.lookup(pinyin);
+            for (record, score) in user_results {
+                let candidate = Candidate::new(record.text.clone())
+                    .with_comment(format!("{} ⭐", pinyin))
+                    .with_weight((score * 1000.0) as u32);
+                scored_candidates.push((candidate, score * 1000.0)); // 用户词库加权
+            }
+        }
+        
+        // 2. 从雾凇拼音词库查询
         if let Some(ref loader) = self.rime_loader {
             let rime_candidates = loader.to_candidates(pinyin);
             for candidate in rime_candidates {
-                candidates.add(candidate);
+                // 检查是否已在用户词库中
+                let already_exists = scored_candidates.iter().any(|(c, _)| c.text == candidate.text);
+                if !already_exists {
+                    scored_candidates.push((candidate, 100.0)); // 词库基础权重
+                }
             }
         }
         
-        // 如果词库结果不足，补充内置词典
-        if candidates.len() < 5 {
+        // 3. 补充内置词典
+        if scored_candidates.len() < 10 {
             if let Some(matches) = self.pinyin_dict.get(pinyin) {
-                for (candidate, _weight) in matches {
-                    // 避免重复
-                    let already_exists = candidates.iter().any(|c| c.text == candidate.text);
+                for (candidate, weight) in matches {
+                    let already_exists = scored_candidates.iter().any(|(c, _)| c.text == candidate.text);
                     if !already_exists {
-                        candidates.add(candidate.clone());
+                        scored_candidates.push((candidate.clone(), *weight as f64));
                     }
                 }
             }
         }
         
-        // 前缀匹配（如果结果太少）
-        if candidates.len() < 5 {
+        // 4. 前缀匹配（如果结果太少）
+        if scored_candidates.len() < 5 {
             for (key, matches) in &self.pinyin_dict {
                 if key.starts_with(pinyin) && key.as_str() != pinyin {
-                    for (candidate, _weight) in matches.iter().take(2) {
-                        let already_exists = candidates.iter().any(|c| c.text == candidate.text);
+                    for (candidate, weight) in matches.iter().take(2) {
+                        let already_exists = scored_candidates.iter().any(|(c, _)| c.text == candidate.text);
                         if !already_exists {
-                            candidates.add(candidate.clone());
+                            scored_candidates.push((candidate.clone(), *weight as f64 * 0.5)); // 前缀匹配降权
                         }
                     }
                 }
-                if candidates.len() >= 10 {
+                if scored_candidates.len() >= 10 {
                     break;
                 }
             }
+        }
+        
+        // 按分数排序并添加到结果
+        scored_candidates.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
+        for (candidate, _) in scored_candidates.into_iter().take(20) {
+            candidates.add(candidate);
         }
         
         Ok(candidates)
@@ -278,6 +352,13 @@ impl PinyinEngine for SimplifiedPinyinEngine {
         // 检查是否是有效的拼音格式（只包含小写字母）
         if !pinyin.chars().all(|c| c.is_ascii_lowercase()) {
             return false;
+        }
+        
+        // 检查是否在用户词库中
+        if let Some(ref user_dict) = self.user_dict {
+            if !user_dict.lookup(pinyin).is_empty() {
+                return true;
+            }
         }
         
         // 检查是否在词库中
@@ -361,5 +442,34 @@ mod tests {
         let candidates = engine.get_candidates("test").unwrap();
         assert!(candidates.get(0).is_some());
         assert_eq!(candidates.get(0).unwrap().text, "测试");
+    }
+
+    #[test]
+    fn test_user_dict() {
+        let mut engine = SimplifiedPinyinEngine::new();
+        
+        // 使用临时文件作为用户词库
+        let temp_path = "/tmp/test_user_dict.json";
+        engine.load_user_dict(temp_path);
+        
+        // 记录使用
+        engine.record_usage("测试", "ceshi");
+        engine.record_usage("测试", "ceshi");
+        engine.record_usage("词频", "cipin");
+        
+        // 检查统计
+        let stats = engine.user_dict_stats().unwrap();
+        assert_eq!(stats.total_records, 2);
+        
+        // 保存
+        engine.save_user_dict().unwrap();
+        
+        // 重新加载验证
+        let engine2 = SimplifiedPinyinEngine::new().with_user_dict(temp_path);
+        let stats2 = engine2.user_dict_stats().unwrap();
+        assert_eq!(stats2.total_records, 2);
+        
+        // 清理
+        let _ = std::fs::remove_file(temp_path);
     }
 }

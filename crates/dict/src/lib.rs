@@ -2,6 +2,7 @@
 
 pub mod format;
 pub mod rime_loader;
+pub mod user_dict;
 
 pub use rime_loader::{
     RimeDictLoader, 
@@ -10,4 +11,9 @@ pub use rime_loader::{
     SourcedEntry,
     DictLoadSummary,
     DictStats,
+};
+pub use user_dict::{
+    UserDict,
+    WordRecord,
+    UserDictStats,
 };

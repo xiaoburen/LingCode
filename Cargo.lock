@@ -350,9 +350,11 @@ dependencies = [
 name = "lingcode-dict"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "lingcode-core",
  "log",
  "serde",
+ "serde_json",
  "serde_yaml",
  "tempfile",
  "thiserror",
@@ -384,6 +386,7 @@ dependencies = [
 name = "lingcode-pinyin"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "lazy_static",
  "lingcode-core",
  "lingcode-dict",
