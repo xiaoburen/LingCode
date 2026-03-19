@@ -3,5 +3,7 @@
   "session_count": 1,
   "last_session": "2026-03-19T07:03:22Z",
   "ralph_checks": 0,
-  "completed_phases": []
+  "completed_phases": [
+    "初始化: 实现了 Engine 核心状态机，支持 Idle->Composing->Selecting 状态流转，包含完整的按键处理和候选词管理"
+  ]
 }

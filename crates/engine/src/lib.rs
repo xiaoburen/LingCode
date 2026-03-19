@@ -4,6 +4,7 @@
 
 use lingcode_core::types::{InputState, KeyEvent, SchemeType};
 use lingcode_core::candidate::Candidate;
+use lingcode_pinyin::{PinyinEngine, SimplifiedPinyinEngine};
 
 pub mod candidate;
 pub mod input_state;
@@ -31,8 +32,8 @@ pub struct Engine {
     candidates: Vec<Candidate>,
     /// 选中的候选词索引
     selected_index: usize,
-    /// 输入方案
-    scheme: SchemeType,
+    /// 拼音引擎
+    pinyin_engine: SimplifiedPinyinEngine,
 }
 
 impl Engine {
@@ -43,7 +44,7 @@ impl Engine {
             input_buffer: String::new(),
             candidates: Vec::new(),
             selected_index: 0,
-            scheme: SchemeType::PinyinSimplified,
+            pinyin_engine: SimplifiedPinyinEngine::new(),
         }
     }
 
@@ -197,24 +198,23 @@ impl Engine {
         }
     }
 
-    /// 更新候选词列表（简化版：基于输入缓冲区生成模拟候选）
+    /// 更新候选词列表
     fn update_candidates(&mut self) {
-        // TODO: 集成真实的拼音匹配器
-        // 目前生成模拟候选词用于测试
-        self.candidates = self.generate_mock_candidates();
+        // 使用真实的拼音引擎获取候选词
+        match self.pinyin_engine.get_candidates(&self.input_buffer) {
+            Ok(candidates_list) => {
+                self.candidates = candidates_list.iter().cloned().collect();
+            }
+            Err(_) => {
+                self.candidates.clear();
+            }
+        }
         self.selected_index = 0;
     }
 
-    /// 生成模拟候选词（用于测试）
-    fn generate_mock_candidates(&self) -> Vec<Candidate> {
-        let input = &self.input_buffer;
-        vec![
-            Candidate::new_with_weight(format!("候选1_{}", input), 1.0),
-            Candidate::new_with_weight(format!("候选2_{}", input), 0.9),
-            Candidate::new_with_weight(format!("候选3_{}", input), 0.8),
-            Candidate::new_with_weight(format!("候选4_{}", input), 0.7),
-            Candidate::new_with_weight(format!("候选5_{}", input), 0.6),
-        ]
+    /// 检查是否是有效的拼音输入
+    pub fn is_valid_input(&self, input: &str) -> bool {
+        self.pinyin_engine.is_valid_pinyin(input)
     }
 
     /// 重置引擎状态
