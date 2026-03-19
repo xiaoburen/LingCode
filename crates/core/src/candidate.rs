@@ -25,6 +25,15 @@ impl Candidate {
         }
     }
 
+    pub fn new_with_weight(text: String, weight: f64) -> Self {
+        Self {
+            text,
+            comment: None,
+            weight: (weight * 100.0) as u32,
+            source: None,
+        }
+    }
+
     pub fn with_comment(mut self, comment: String) -> Self {
         self.comment = Some(comment);
         self

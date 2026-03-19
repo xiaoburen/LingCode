@@ -82,6 +82,10 @@ impl KeyModifiers {
         Self::default()
     }
 
+    pub fn is_empty(&self) -> bool {
+        !self.shift && !self.ctrl && !self.alt && !self.meta
+    }
+
     pub fn with_shift(mut self) -> Self {
         self.shift = true;
         self
