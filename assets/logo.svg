@@ -3,107 +3,44 @@
   <!-- 背景：透明 -->
   <rect width="200" height="200" fill="none"/>
   
-  <!-- 灵字 - 黑色细线边框，白色填充 -->
-  <g transform="translate(20, 10) scale(0.85)">
-    <!-- 上部：彐 -->
-    <!-- 横 -->
-    <path d="M 60 45 L 140 45" 
-          fill="none" 
-          stroke="#000000" 
-          stroke-width="2.5"
-          stroke-linecap="round"/>
-    
-    <!-- 竖折 -->
-    <path d="M 60 45 L 60 75 L 90 75" 
-          fill="none" 
-          stroke="#000000" 
-          stroke-width="2.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"/>
-    
-    <!-- 横 -->
-    <path d="M 60 60 L 85 60" 
-          fill="none" 
-          stroke="#000000" 
-          stroke-width="2.5"
-          stroke-linecap="round"/>
-    
-    <!-- 火字旁 - 左点 -->
-    <path d="M 95 35 Q 90 45 85 55" 
-          fill="none" 
-          stroke="#000000" 
-          stroke-width="2.5"
-          stroke-linecap="round"/>
-    
-    <!-- 火字旁 - 右点 -->
-    <path d="M 115 35 Q 120 45 125 55" 
-          fill="none" 
-          stroke="#000000" 
-          stroke-width="2.5"
-          stroke-linecap="round"/>
-    
-    <!-- 火字旁 - 撇 -->
-    <path d="M 105 40 L 100 70" 
-          fill="none" 
-          stroke="#000000" 
-          stroke-width="2.5"
-          stroke-linecap="round"/>
-    
-    <!-- 火字旁 - 捺 -->
-    <path d="M 105 40 L 115 70" 
-          fill="none" 
-          stroke="#000000" 
-          stroke-width="2.5"
-          stroke-linecap="round"/>
-    
-    <!-- 下部：巫 -->
-    <!-- 横 -->
-    <path d="M 50 95 L 150 95" 
-          fill="none" 
-          stroke="#000000" 
-          stroke-width="2.5"
-          stroke-linecap="round"/>
-    
-    <!-- 竖 -->
-    <path d="M 100 75 L 100 160" 
-          fill="none" 
-          stroke="#000000" 
-          stroke-width="2.5"
-          stroke-linecap="round"/>
+  <!-- 灵字 - 简洁现代风格 -->
+  <g transform="translate(100, 100)" stroke="#1a1a1a" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- 上部：火 -->
+    <!-- 左点 -->
+    <path d="M -25 -55 Q -30 -45 -35 -35" stroke-width="2.5"/>
+    <!-- 右点 -->
+    <path d="M 25 -55 Q 30 -45 35 -35" stroke-width="2.5"/>
     
     <!-- 撇 -->
-    <path d="M 100 110 L 60 140" 
-          fill="none" 
-          stroke="#000000" 
-          stroke-width="2.5"
-          stroke-linecap="round"/>
+    <path d="M 0 -50 L -8 -15" stroke-width="2.5"/>
     
     <!-- 捺 -->
-    <path d="M 100 110 L 140 140" 
-          fill="none" 
-          stroke="#000000" 
-          stroke-width="2.5"
-          stroke-linecap="round"/>
+    <path d="M 0 -50 L 12 -15" stroke-width="2.5"/>
     
-    <!-- 人字 - 左撇 -->
-    <path d="M 70 120 L 55 150" 
-          fill="none" 
-          stroke="#000000" 
-          stroke-width="2.5"
-          stroke-linecap="round"/>
+    <!-- 上部横（连接） -->
+    <path d="M -45 -25 L 45 -25" stroke-width="2.5"/>
     
-    <!-- 人字 - 右捺 -->
-    <path d="M 130 120 L 145 150" 
-          fill="none" 
-          stroke="#000000" 
-          stroke-width="2.5"
-          stroke-linecap="round"/>
+    <!-- 中部横 -->
+    <path d="M -50 -5 L 50 -5" stroke-width="2.5"/>
+    
+    <!-- 竖（贯穿） -->
+    <path d="M 0 -25 L 0 55" stroke-width="3"/>
+    
+    <!-- 下部：工 + 人 -->
+    <!-- 左撇 -->
+    <path d="M 0 10 L -35 40" stroke-width="2.5"/>
+    
+    <!-- 右捺 -->
+    <path d="M 0 10 L 35 40" stroke-width="2.5"/>
     
     <!-- 底部横 -->
-    <path d="M 70 155 L 130 155" 
-          fill="none" 
-          stroke="#000000" 
-          stroke-width="2.5"
-          stroke-linecap="round"/>
+    <path d="M -30 50 L 30 50" stroke-width="2.5"/>
   </g>
+  
+  <!-- 外框（可选，用于图标） -->
+  <rect x="15" y="15" width="170" height="170" rx="20" ry="20" 
+        fill="none" 
+        stroke="#1a1a1a" 
+        stroke-width="2"
+        stroke-dasharray="none"/>
 </svg>

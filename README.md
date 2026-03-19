@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="./assets/logo.svg" width="120" height="120" alt="LingCode Logo">
+
 # 🦀 LingCode 灵码输入法
 
 **A Rust-based Rime-compatible input method framework**

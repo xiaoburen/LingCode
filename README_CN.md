@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="./assets/logo.svg" width="120" height="120" alt="灵码输入法 Logo">
+
 # 🦀 灵码输入法 LingCode
 
 **基于 Rust 的 Rime 兼容输入法框架**
