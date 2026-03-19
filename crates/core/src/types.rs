@@ -10,8 +10,14 @@ pub enum SchemeType {
     PinyinSimplified,
     /// 全拼（繁体）
     PinyinTraditional,
-    /// 双拼
+    /// 双拼（通用）
     DoublePinyin,
+    /// 小鹤双拼
+    DoublePinyinXiaoHe,
+    /// 自然码双拼
+    DoublePinyinZiranma,
+    /// 搜狗双拼
+    DoublePinyinSougou,
 }
 
 impl std::fmt::Display for SchemeType {
@@ -20,6 +26,9 @@ impl std::fmt::Display for SchemeType {
             SchemeType::PinyinSimplified => write!(f, "pinyin_simp"),
             SchemeType::PinyinTraditional => write!(f, "pinyin_trad"),
             SchemeType::DoublePinyin => write!(f, "double_pinyin"),
+            SchemeType::DoublePinyinXiaoHe => write!(f, "double_pinyin_xiaohe"),
+            SchemeType::DoublePinyinZiranma => write!(f, "double_pinyin_ziranma"),
+            SchemeType::DoublePinyinSougou => write!(f, "double_pinyin_sougou"),
         }
     }
 }

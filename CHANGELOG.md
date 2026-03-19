@@ -6,6 +6,8 @@
 - **最后更新**: 2026-03-19 15:02
 
 ## 已完成任务
+- [2026-03-19] 选项B: 实现双拼映射，支持小鹤双拼、自然码、搜狗双拼三种方案，包含完整的映射表和转换逻辑
+- [2026-03-19] 选项B: 创建 DoublePinyinEngine，支持双拼到全拼的转换，实现 PinyinEngine trait
 - [2026-03-19] 选项A: 优化多词库集成，SimplifiedPinyinEngine 现在直接使用 RimeDictLoader 的多词库加载功能，支持 `with_rime_dicts()` 和 `has_external_dict()` 等新方法
 - [2026-03-19] 选项A: 实现多词库加载支持，RimeDictLoader 现在可以加载多个词库文件（8105/base/ext/tencent），支持词库来源优先级管理
 - [2026-03-19] 下一阶段: 创建了中文 README，实现了 RimeDictLoader 加载雾凇拼音词库，CLI 现在可以加载并使用 8105 字表词库，候选词更丰富准确

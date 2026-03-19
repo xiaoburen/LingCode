@@ -8,7 +8,7 @@ license.workspace = true
 [dependencies]
 lingcode-core = { path = "../core" }
 lingcode-pinyin = { path = "../pinyin" }
-double-pinyin = { path = "../double-pinyin" }
+lingcode-double-pinyin = { path = "../double-pinyin" }
 lingcode-dict = { path = "../dict" }
 converters = { path = "../converters" }
 ffi = { path = "../ffi" }

@@ -1,10 +1,17 @@
 [package]
-name = "double-pinyin"
-version = "0.1.0"
-edition = "2021"
+name = "lingcode-double-pinyin"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
 
 [dependencies]
-# Add dependencies here as needed
+lingcode-core = { path = "../core" }
+lingcode-pinyin = { path = "../pinyin" }
+serde = { workspace = true }
+thiserror = { workspace = true }
 
 [lib]
-crate-type = ["cdylib", "rlib"]
+name = "lingcode_double_pinyin"
+path = "src/lib.rs"

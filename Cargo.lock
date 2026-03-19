@@ -127,10 +127,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "double-pinyin"
-version = "0.1.0"
-
-[[package]]
 name = "either"
 version = "1.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -363,14 +359,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "lingcode-double-pinyin"
+version = "0.1.0"
+dependencies = [
+ "lingcode-core",
+ "lingcode-pinyin",
+ "serde",
+ "thiserror",
+]
+
+[[package]]
 name = "lingcode-engine"
 version = "0.1.0"
 dependencies = [
  "converters",
- "double-pinyin",
  "ffi",
  "lingcode-core",
  "lingcode-dict",
+ "lingcode-double-pinyin",
  "lingcode-pinyin",
 ]
 
