@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./assets/logo.svg" width="120" height="120" alt="LingCode Logo">
+<img src="./assets/logo.png" width="120" height="120" alt="LingCode Logo">
 
 # LingCode 灵码输入法
 
@@ -146,7 +146,7 @@ Licensed under the [Apache License 2.0](./LICENSE).
 
 <div align="center">
 
-<img src="./assets/logo.svg" width="40" height="40" alt="LingCode Logo">
+<img src="./assets/logo.png" width="40" height="40" alt="LingCode Logo">
 
 **LingCode - Making Chinese input smoother**
 

@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./assets/logo.svg" width="120" height="120" alt="灵码输入法 Logo">
+<img src="./assets/logo.png" width="120" height="120" alt="灵码输入法 Logo">
 
 # 灵码输入法 LingCode
 
@@ -146,7 +146,7 @@ LingCode/
 
 <div align="center">
 
-<img src="./assets/logo.svg" width="40" height="40" alt="灵码输入法 Logo">
+<img src="./assets/logo.png" width="40" height="40" alt="灵码输入法 Logo">
 
 **灵码输入法 - 让中文输入更流畅**
 
