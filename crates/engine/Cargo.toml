@@ -9,7 +9,7 @@ license.workspace = true
 lingcode-core = { path = "../core" }
 lingcode-pinyin = { path = "../pinyin" }
 double-pinyin = { path = "../double-pinyin" }
-dict = { path = "../dict" }
+lingcode-dict = { path = "../dict" }
 converters = { path = "../converters" }
 ffi = { path = "../ffi" }
 

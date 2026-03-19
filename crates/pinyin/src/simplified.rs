@@ -8,12 +8,18 @@ use lingcode_core::{
     error::{Result},
     types::SchemeType,
 };
+use lingcode_dict::RimeDictLoader;
 use std::collections::HashMap;
+use std::path::Path;
 
 /// 简体拼音引擎
 pub struct SimplifiedPinyinEngine {
-    /// 拼音到汉字的映射表
+    /// 拼音到汉字的映射表（内置基础词典）
     pinyin_dict: HashMap<String, Vec<(Candidate, u32)>>,
+    /// 雾凇拼音词库加载器
+    rime_loader: Option<RimeDictLoader>,
+    /// 词库路径
+    dict_path: Option<String>,
 }
 
 impl SimplifiedPinyinEngine {
@@ -21,9 +27,39 @@ impl SimplifiedPinyinEngine {
     pub fn new() -> Self {
         let mut engine = Self {
             pinyin_dict: HashMap::new(),
+            rime_loader: None,
+            dict_path: None,
         };
         engine.load_builtin_dict();
         engine
+    }
+
+    /// 从雾凇拼音词库创建引擎
+    pub fn with_rime_dict(dict_path: &str) -> Self {
+        let mut engine = Self::new();
+        engine.load_rime_dict(dict_path);
+        engine
+    }
+
+    /// 加载雾凇拼音词库
+    pub fn load_rime_dict(&mut self, dict_path: &str) {
+        let mut loader = RimeDictLoader::new();
+        let path = Path::new(dict_path);
+        
+        if path.exists() {
+            match loader.load_from_file(path) {
+                Ok(_) => {
+                    log::info!("已加载词库: {}", dict_path);
+                    self.rime_loader = Some(loader);
+                    self.dict_path = Some(dict_path.to_string());
+                }
+                Err(e) => {
+                    log::warn!("加载词库失败: {}, 使用内置词典", e);
+                }
+            }
+        } else {
+            log::warn!("词库文件不存在: {}, 使用内置词典", dict_path);
+        }
     }
 
     /// 加载内置基础词典
@@ -141,19 +177,36 @@ impl PinyinEngine for SimplifiedPinyinEngine {
     fn get_candidates(&self, pinyin: &str) -> Result<Candidates> {
         let mut candidates = Candidates::new();
         
-        // 精确匹配
-        if let Some(matches) = self.pinyin_dict.get(pinyin) {
-            for (candidate, _weight) in matches {
-                candidates.add(candidate.clone());
+        // 优先从雾凇拼音词库查询
+        if let Some(ref loader) = self.rime_loader {
+            let rime_candidates = loader.to_candidates(pinyin);
+            for candidate in rime_candidates {
+                candidates.add(candidate);
             }
         }
         
-        // 前缀匹配（如果精确匹配结果太少）
+        // 如果词库结果不足，补充内置词典
+        if candidates.len() < 5 {
+            if let Some(matches) = self.pinyin_dict.get(pinyin) {
+                for (candidate, _weight) in matches {
+                    // 避免重复
+                    let already_exists = candidates.iter().any(|c| c.text == candidate.text);
+                    if !already_exists {
+                        candidates.add(candidate.clone());
+                    }
+                }
+            }
+        }
+        
+        // 前缀匹配（如果结果太少）
         if candidates.len() < 5 {
             for (key, matches) in &self.pinyin_dict {
-                if key.starts_with(pinyin) && key != pinyin {
-                    for (candidate, _weight) in matches.iter().take(3) {
-                        candidates.add(candidate.clone());
+                if key.starts_with(pinyin) && key.as_str() != pinyin {
+                    for (candidate, _weight) in matches.iter().take(2) {
+                        let already_exists = candidates.iter().any(|c| c.text == candidate.text);
+                        if !already_exists {
+                            candidates.add(candidate.clone());
+                        }
                     }
                 }
                 if candidates.len() >= 10 {
@@ -173,6 +226,13 @@ impl PinyinEngine for SimplifiedPinyinEngine {
         // 检查是否是有效的拼音格式（只包含小写字母）
         if !pinyin.chars().all(|c| c.is_ascii_lowercase()) {
             return false;
+        }
+        
+        // 检查是否在词库中
+        if let Some(ref loader) = self.rime_loader {
+            if !loader.lookup(pinyin).is_empty() {
+                return true;
+            }
         }
         
         // 检查是否在词典中或有前缀匹配

@@ -37,14 +37,19 @@ pub struct Engine {
 }
 
 impl Engine {
-    /// 创建新引擎实例
+    /// 创建新引擎实例（使用默认拼音引擎）
     pub fn new() -> Self {
+        Self::with_pinyin_engine(SimplifiedPinyinEngine::new())
+    }
+
+    /// 使用指定的拼音引擎创建引擎实例
+    pub fn with_pinyin_engine(pinyin_engine: SimplifiedPinyinEngine) -> Self {
         Self {
             state: InputState::Idle,
             input_buffer: String::new(),
             candidates: Vec::new(),
             selected_index: 0,
-            pinyin_engine: SimplifiedPinyinEngine::new(),
+            pinyin_engine,
         }
     }
 

@@ -1,12 +1,20 @@
 [package]
-name = "dict"
-version = "0.1.0"
-edition = "2021"
+name = "lingcode-dict"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
 
 [dependencies]
-# 在这里添加字典库的依赖项，例如：
-# serde = { version = "1.0", features = ["derive"] }
-# 或者其他需要的库
+lingcode-core = { path = "../core" }
+serde = { workspace = true }
+serde_yaml = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+tempfile = "3.8"
 
 [lib]
-crate-type = ["cdylib", "rlib"]
+name = "lingcode_dict"
+path = "src/lib.rs"

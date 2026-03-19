@@ -5,6 +5,7 @@
 use anyhow::Result;
 use lingcode_engine::Engine;
 use lingcode_core::types::KeyEvent;
+use lingcode_pinyin::SimplifiedPinyinEngine;
 use std::io::{self, Write};
 
 fn main() -> Result<()> {
@@ -17,7 +18,23 @@ fn main() -> Result<()> {
     println!("╚══════════════════════════════════════════╝");
     println!();
 
-    let mut engine = Engine::new();
+    // 尝试加载雾凇拼音词库
+    let rime_dict_path = std::path::PathBuf::from(
+        std::env::var("HOME").unwrap_or_default()
+    ).join("Library/Rime/cn_dicts/8105.dict.yaml");
+    
+    let pinyin_engine = if rime_dict_path.exists() {
+        println!("📚 正在加载雾凇拼音词库...");
+        let mut engine = SimplifiedPinyinEngine::new();
+        engine.load_rime_dict(rime_dict_path.to_str().unwrap());
+        println!("✅ 词库加载完成\n");
+        engine
+    } else {
+        println!("⚠️  未找到雾凇拼音词库，使用内置基础词典\n");
+        SimplifiedPinyinEngine::new()
+    };
+
+    let mut engine = Engine::with_pinyin_engine(pinyin_engine);
     let mut committed_text = String::new();
 
     loop {
