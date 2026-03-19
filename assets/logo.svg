@@ -6,38 +6,56 @@
         stroke="#000000"
         stroke-width="2"/>
   
-  <!-- 灵字 - 居中 -->
+  <!-- 灵字 --
+       结构：上部"彐"+"火"，下部"巫"
+  -->
   <g transform="translate(100, 100)">
-    <!-- 火字头 -->
+    <!-- ===== 上部：火字变体 ===== -->
+    
     <!-- 左点 -->
-    <path d="M -25 -45 Q -30 -35 -35 -25" 
+    <path d="M -30 -55 Q -35 -45 -40 -35" 
           fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
+    
     <!-- 右点 -->
-    <path d="M 25 -45 Q 30 -35 35 -25" 
+    <path d="M 30 -55 Q 35 -45 40 -35" 
           fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
     
-    <!-- 中间撇 -->
-    <path d="M 0 -40 L -8 -15" 
+    <!-- 中间短撇 -->
+    <path d="M -5 -50 L -12 -30" 
           fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
     
-    <!-- 中间捺 -->
-    <path d="M 0 -40 L 8 -15" 
+    <!-- 中间短捺 -->
+    <path d="M 5 -50 L 12 -30" 
           fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
     
     <!-- 横 -->
-    <path d="M -35 -5 L 35 -5" 
+    <path d="M -45 -20 L 45 -20" 
           fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
     
-    <!-- 竖 -->
-    <path d="M 0 -5 L 0 50" 
+    <!-- ===== 下部：巫 ===== -->
+    
+    <!-- 竖（贯穿）-->
+    <path d="M 0 -20 L 0 55" 
           fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
     
-    <!-- 撇 -->
-    <path d="M 0 15 L -30 40" 
+    <!-- 左边撇 -->
+    <path d="M 0 0 L -35 30" 
           fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
     
-    <!-- 捺 -->
-    <path d="M 0 15 L 30 40" 
+    <!-- 右边捺 -->
+    <path d="M 0 0 L 35 30" 
+          fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
+    
+    <!-- 左下人字撇 -->
+    <path d="M -20 25 L -35 50" 
+          fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
+    
+    <!-- 右下人字捺 -->
+    <path d="M 20 25 L 35 50" 
+          fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
+    
+    <!-- 底部横 -->
+    <path d="M -30 55 L 30 55" 
           fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
   </g>
 </svg>
