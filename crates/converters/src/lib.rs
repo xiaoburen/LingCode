@@ -1,5 +1,7 @@
-// This file contains the main implementation for the converters library, which handles conversion logic between different input methods. 
+//! 简繁转换模块
+//! 
+//! 提供简体中文和繁体中文之间的转换功能
 
-pub mod s2t_t2s; // Import the module for Simplified to Traditional and Traditional to Simplified conversion. 
+pub mod chinese_converter;
 
-// Additional conversion functionalities can be added here in the future.
+pub use chinese_converter::{ChineseConverter, ConversionMode};
