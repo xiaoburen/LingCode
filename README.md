@@ -22,11 +22,11 @@
 | Feature | Status | Description |
 |---------|--------|-------------|
 | 🎯 **Pinyin Input** | ✅ Ready | Simplified & Traditional Pinyin |
-| ⌨️ **Double Pinyin** | 🚧 WIP | Natural Code, Flypy, MS Pinyin |
+| ⌨️ **Double Pinyin** | ✅ Ready | Natural Code, Flypy, MS Pinyin |
 | 💻 **Cross-Platform** | 🚧 WIP | macOS, Windows, Linux, iOS, Android |
 | 📚 **Rime-Compatible** | ✅ Ready | Use Rime schemas & dictionaries |
-| 🧠 **Smart Learning** | 📋 Planned | Word frequency learning |
-| 🔄 **OpenCC** | 📋 Planned | Simplified/Traditional conversion |
+| 🧠 **Smart Learning** | ✅ Ready | Word frequency learning with 30-day half-life |
+| 🔄 **OpenCC** | ✅ Ready | Simplified/Traditional conversion |
 
 ---
 
@@ -98,17 +98,18 @@ LingCode/
 ### Phase 2: Feature Enhancement ✅
 - [x] Load Rime-ice dictionaries (8105 chars + base + ext + tencent)
 - [x] Double pinyin support (Flypy, Natural Code, MS Pinyin)
-- [x] Word frequency learning with UserDict
+- [x] Word frequency learning with UserDict (30-day half-life decay)
 - [x] Simplified/Traditional conversion (OpenCC)
 
 ### Phase 3: Cross-Platform Frontend 🚧
 - [x] FFI bindings (C API)
 - [x] macOS input method (InputMethodKit)
-- [x] Connect to real Rust engine via FFI
+- [x] Input controller with letter buffer, backspace, selection
+- [ ] Connect to real Rust engine via FFI (WIP: compilation fixes)
 - [ ] Windows input method (TSF)
 - [ ] Linux input method (IBus/Fcitx)
 
-**Status**: Core library complete, macOS frontend framework ready. Project paused for testing.
+**Status**: Core library complete, macOS frontend framework ready. Working on FFI integration fixes.
 
 ---
 
