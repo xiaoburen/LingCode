@@ -3,4 +3,11 @@
 pub mod format;
 pub mod rime_loader;
 
-pub use rime_loader::{RimeDictLoader, DictEntry};
+pub use rime_loader::{
+    RimeDictLoader, 
+    DictEntry, 
+    DictSource, 
+    SourcedEntry,
+    DictLoadSummary,
+    DictStats,
+};

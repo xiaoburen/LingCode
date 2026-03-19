@@ -331,6 +331,7 @@ dependencies = [
  "crossterm",
  "env_logger",
  "lingcode-core",
+ "lingcode-dict",
  "lingcode-engine",
  "lingcode-pinyin",
  "log",
@@ -354,6 +355,7 @@ name = "lingcode-dict"
 version = "0.1.0"
 dependencies = [
  "lingcode-core",
+ "log",
  "serde",
  "serde_yaml",
  "tempfile",

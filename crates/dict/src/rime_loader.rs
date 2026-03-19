@@ -1,6 +1,6 @@
 //! 雾凇拼音词库加载器
 //!
-//! 从 Rime 格式的 YAML 词库加载词条
+//! 从 Rime 格式的 YAML 词库加载词条，支持多词库合并
 
 use lingcode_core::candidate::Candidate;
 use lingcode_core::error::Result;
@@ -17,10 +17,38 @@ pub struct DictEntry {
     pub weight: u32,
 }
 
-/// 雾凇拼音词库加载器
+/// 词库来源
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum DictSource {
+    Base,      // 基础词库 8105
+    Ext,       // 扩展词库
+    Tencent,   // 腾讯词库
+    Custom,    // 自定义词库
+}
+
+impl DictSource {
+    pub fn priority(&self) -> u32 {
+        match self {
+            DictSource::Base => 100,
+            DictSource::Ext => 80,
+            DictSource::Tencent => 60,
+            DictSource::Custom => 40,
+        }
+    }
+}
+
+/// 带来源的词库条目
+#[derive(Debug, Clone)]
+pub struct SourcedEntry {
+    pub entry: DictEntry,
+    pub source: DictSource,
+}
+
+/// 雾凇拼音词库加载器（支持多词库）
 pub struct RimeDictLoader {
-    entries: Vec<DictEntry>,
-    pinyin_index: HashMap<String, Vec<DictEntry>>,
+    entries: Vec<SourcedEntry>,
+    pinyin_index: HashMap<String, Vec<SourcedEntry>>,
+    loaded_sources: Vec<DictSource>,
 }
 
 impl RimeDictLoader {
@@ -28,15 +56,17 @@ impl RimeDictLoader {
         Self {
             entries: Vec::new(),
             pinyin_index: HashMap::new(),
+            loaded_sources: Vec::new(),
         }
     }
 
-    /// 从文件加载词库
-    pub fn load_from_file(&mut self, path: &Path) -> Result<()> {
+    /// 从文件加载词库（指定来源）
+    pub fn load_from_file_with_source(&mut self, path: &Path, source: DictSource) -> Result<usize> {
         let file = File::open(path)?;
         let reader = BufReader::new(file);
         
         let mut in_header = true;
+        let mut loaded_count = 0;
         
         for line in reader.lines() {
             let line = line?;
@@ -58,20 +88,79 @@ impl RimeDictLoader {
             // 解析词条: 文字\t拼音\t权重
             if let Some(entry) = self.parse_entry(line) {
                 let pinyin = entry.pinyin.clone();
-                self.entries.push(entry.clone());
+                let sourced = SourcedEntry { entry, source };
+                self.entries.push(sourced.clone());
                 self.pinyin_index
                     .entry(pinyin)
                     .or_insert_with(Vec::new)
-                    .push(entry);
+                    .push(sourced);
+                loaded_count += 1;
             }
         }
         
         // 对每个拼音的词条按权重排序
         for entries in self.pinyin_index.values_mut() {
-            entries.sort_by(|a, b| b.weight.cmp(&a.weight));
+            entries.sort_by(|a, b| {
+                // 先按来源优先级排序，再按权重排序
+                let priority_cmp = b.source.priority().cmp(&a.source.priority());
+                if priority_cmp != std::cmp::Ordering::Equal {
+                    priority_cmp
+                } else {
+                    b.entry.weight.cmp(&a.entry.weight)
+                }
+            });
         }
         
-        Ok(())
+        if loaded_count > 0 {
+            self.loaded_sources.push(source);
+        }
+        
+        Ok(loaded_count)
+    }
+
+    /// 从文件加载词库（默认 Custom 来源）
+    pub fn load_from_file(&mut self, path: &Path) -> Result<usize> {
+        self.load_from_file_with_source(path, DictSource::Custom)
+    }
+
+    /// 加载多个雾凇拼音词库文件
+    /// 
+    /// 标准加载顺序：
+    /// 1. 8105.dict.yaml - 基础词库
+    /// 2. base.dict.yaml - 基础扩展
+    /// 3. ext.dict.yaml - 扩展词库
+    /// 4. tencent.dict.yaml - 腾讯词库
+    pub fn load_rime_ice_dicts(&mut self, rime_dict_dir: &Path) -> Result<DictLoadSummary> {
+        let mut summary = DictLoadSummary::new();
+        
+        // 定义要加载的词库文件及其来源
+        let dict_files: Vec<(&str, DictSource)> = vec![
+            ("8105.dict.yaml", DictSource::Base),
+            ("base.dict.yaml", DictSource::Ext),
+            ("ext.dict.yaml", DictSource::Ext),
+            ("tencent.dict.yaml", DictSource::Tencent),
+        ];
+        
+        for (filename, source) in dict_files {
+            let path = rime_dict_dir.join(filename);
+            if path.exists() {
+                match self.load_from_file_with_source(&path, source) {
+                    Ok(count) => {
+                        log::info!("已加载 {}: {} 条词条", filename, count);
+                        summary.add_loaded(filename, count, source);
+                    }
+                    Err(e) => {
+                        log::warn!("加载 {} 失败: {}", filename, e);
+                        summary.add_failed(filename, e.to_string());
+                    }
+                }
+            } else {
+                log::debug!("词库文件不存在: {}", path.display());
+                summary.add_missing(filename);
+            }
+        }
+        
+        Ok(summary)
     }
 
     /// 解析单行词条
@@ -104,12 +193,12 @@ impl RimeDictLoader {
     pub fn lookup(&self, pinyin: &str) -> Vec<&DictEntry> {
         self.pinyin_index
             .get(pinyin)
-            .map(|v| v.iter().collect())
+            .map(|v| v.iter().map(|s| &s.entry).collect())
             .unwrap_or_default()
     }
 
     /// 获取所有词条
-    pub fn entries(&self) -> &[DictEntry] {
+    pub fn entries(&self) -> &[SourcedEntry] {
         &self.entries
     }
 
@@ -123,6 +212,25 @@ impl RimeDictLoader {
         self.entries.is_empty()
     }
 
+    /// 获取已加载的词库来源
+    pub fn loaded_sources(&self) -> &[DictSource] {
+        &self.loaded_sources
+    }
+
+    /// 获取统计信息
+    pub fn stats(&self) -> DictStats {
+        let mut by_source: HashMap<DictSource, usize> = HashMap::new();
+        for entry in &self.entries {
+            *by_source.entry(entry.source).or_insert(0) += 1;
+        }
+        
+        DictStats {
+            total_entries: self.entries.len(),
+            unique_pinyin: self.pinyin_index.len(),
+            by_source,
+        }
+    }
+
     /// 转换为 Candidate 列表
     pub fn to_candidates(&self, pinyin: &str) -> Vec<Candidate> {
         self.lookup(pinyin)
@@ -134,6 +242,51 @@ impl RimeDictLoader {
             })
             .collect()
     }
+}
+
+/// 词库加载摘要
+#[derive(Debug, Clone)]
+pub struct DictLoadSummary {
+    pub loaded: Vec<(String, usize, DictSource)>,
+    pub failed: Vec<(String, String)>,
+    pub missing: Vec<String>,
+    pub total_entries: usize,
+}
+
+impl DictLoadSummary {
+    pub fn new() -> Self {
+        Self {
+            loaded: Vec::new(),
+            failed: Vec::new(),
+            missing: Vec::new(),
+            total_entries: 0,
+        }
+    }
+
+    pub fn add_loaded(&mut self, name: &str, count: usize, source: DictSource) {
+        self.loaded.push((name.to_string(), count, source));
+        self.total_entries += count;
+    }
+
+    pub fn add_failed(&mut self, name: &str, error: String) {
+        self.failed.push((name.to_string(), error));
+    }
+
+    pub fn add_missing(&mut self, name: &str) {
+        self.missing.push(name.to_string());
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.loaded.is_empty()
+    }
+}
+
+/// 词库统计信息
+#[derive(Debug, Clone)]
+pub struct DictStats {
+    pub total_entries: usize,
+    pub unique_pinyin: usize,
+    pub by_source: HashMap<DictSource, usize>,
 }
 
 impl Default for RimeDictLoader {

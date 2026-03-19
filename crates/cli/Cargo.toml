@@ -14,6 +14,7 @@ path = "src/main.rs"
 lingcode-core = { path = "../../crates/core" }
 lingcode-engine = { path = "../../crates/engine" }
 lingcode-pinyin = { path = "../../crates/pinyin" }
+lingcode-dict = { path = "../../crates/dict" }
 
 anyhow = { workspace = true }
 log = { workspace = true }

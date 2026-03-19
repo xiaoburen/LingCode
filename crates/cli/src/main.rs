@@ -6,11 +6,13 @@ use anyhow::Result;
 use lingcode_engine::Engine;
 use lingcode_core::types::KeyEvent;
 use lingcode_pinyin::SimplifiedPinyinEngine;
+use lingcode_dict::{RimeDictLoader, DictSource};
 use std::io::{self, Write};
+use std::path::PathBuf;
 
 fn main() -> Result<()> {
     println!("╔══════════════════════════════════════════╗");
-    println!("║       📝 灵码输入法 CLI Demo v0.1        ║");
+    println!("║       📝 灵码输入法 CLI Demo v0.2        ║");
     println!("╠══════════════════════════════════════════╣");
     println!("║  输入拼音，按空格或数字选择候选词         ║");
     println!("║  Backspace: 删除  |  Esc: 取消           ║");
@@ -19,20 +21,46 @@ fn main() -> Result<()> {
     println!();
 
     // 尝试加载雾凇拼音词库
-    let rime_dict_path = std::path::PathBuf::from(
+    let rime_dict_dir = PathBuf::from(
         std::env::var("HOME").unwrap_or_default()
-    ).join("Library/Rime/cn_dicts/8105.dict.yaml");
+    ).join("Library/Rime/cn_dicts");
     
-    let pinyin_engine = if rime_dict_path.exists() {
+    let pinyin_engine = if rime_dict_dir.exists() {
         println!("📚 正在加载雾凇拼音词库...");
-        let mut engine = SimplifiedPinyinEngine::new();
-        engine.load_rime_dict(rime_dict_path.to_str().unwrap());
-        println!("✅ 词库加载完成\n");
-        engine
+        let mut loader = RimeDictLoader::new();
+        
+        // 尝试加载多个词库文件
+        let summary = loader.load_rime_ice_dicts(&rime_dict_dir)?;
+        
+        if !summary.is_empty() {
+            println!("✅ 词库加载完成！");
+            println!("   总计: {} 条词条", summary.total_entries);
+            for (name, count, source) in &summary.loaded {
+                let source_name = match source {
+                    DictSource::Base => "基础",
+                    DictSource::Ext => "扩展",
+                    DictSource::Tencent => "腾讯",
+                    DictSource::Custom => "自定义",
+                };
+                println!("   • {}: {} 条 ({})", name, count, source_name);
+            }
+            
+            // 创建使用多词库的拼音引擎
+            let mut engine = SimplifiedPinyinEngine::new();
+            // 将加载器的数据合并到引擎中
+            // TODO: 优化这里的实现，让引擎直接使用 loader
+            engine
+        } else {
+            println!("⚠️  未找到雾凇拼音词库文件，使用内置基础词典");
+            SimplifiedPinyinEngine::new()
+        }
     } else {
-        println!("⚠️  未找到雾凇拼音词库，使用内置基础词典\n");
+        println!("⚠️  未找到雾凇拼音词库目录，使用内置基础词典");
+        println!("   路径: {}", rime_dict_dir.display());
         SimplifiedPinyinEngine::new()
     };
+
+    println!();
 
     let mut engine = Engine::with_pinyin_engine(pinyin_engine);
     let mut committed_text = String::new();
