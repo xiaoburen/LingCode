@@ -1,85 +1,150 @@
-# LingCode Input Method Framework
+<div align="center">
 
-LingCode is a Rust-based input method framework that aims to provide a flexible and efficient way to input Chinese characters using Pinyin (Simplified and Traditional) and Double Pinyin. This project is designed to be cross-platform, supporting Windows, macOS, Linux, iOS, and Android.
+# 🦀 LingCode 灵码输入法
 
-## Features
+**A Rust-based Rime-compatible input method framework**
 
-- **Pinyin Input**: Supports both Simplified and Traditional Pinyin input methods.
-- **Double Pinyin**: Implements Double Pinyin input for efficient typing.
-- **Cross-Platform**: Compatible with major operating systems including Windows, macOS, Linux, iOS, and Android.
-- **Modular Design**: Built with a modular architecture, allowing easy extension and customization.
-- **Rime-Compatible**: Leverages resources and schemas from the Rime input method ecosystem.
+[<img src="https://img.shields.io/badge/English-README-blue?style=flat-square">](./README.md)
+[<img src="https://img.shields.io/badge/中文-README-red?style=flat-square">](./README_CN.md)
 
-## Project Structure
+[<img src="https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white">](https://www.rust-lang.org/)
+[<img src="https://img.shields.io/badge/License-Apache%202.0-green?style=for-the-badge">](./LICENSE)
+[<img src="https://img.shields.io/badge/Rime-Compatible-orange?style=for-the-badge">](https://rime.im/)
 
-- `crates/`: Contains the core libraries for the input method framework.
-  - `core/`: Core functionalities of the input method.
-  - `engine/`: Input processing engine.
-  - `pinyin/`: Pinyin input handling.
-  - `double-pinyin/`: Double Pinyin input handling.
-  - `dict/`: Dictionary management.
-  - `converters/`: Conversion utilities between Simplified and Traditional Chinese.
-  - `ffi/`: Foreign Function Interface for integration with other languages.
+</div>
 
-- `frontends/`: Contains platform-specific frontends.
-  - `desktop/`: Desktop applications for Windows, macOS, and Linux.
-  - `mobile/`: Mobile applications for Android and iOS.
+---
 
-- `bindings/`: Language bindings for Node.js and Python.
+## ✨ Features
 
-- `resources/`: Resource files including schemas and dictionaries from Rime.
-  - `schemas/`: Input method schema configurations.
-  - `dicts/`: Dictionary files.
-  - `opencc/`: OpenCC conversion configurations.
+| Feature | Status | Description |
+|---------|--------|-------------|
+| 🎯 **Pinyin Input** | ✅ Ready | Simplified & Traditional Pinyin |
+| ⌨️ **Double Pinyin** | 🚧 WIP | Natural Code, Flypy, MS Pinyin |
+| 💻 **Cross-Platform** | 🚧 WIP | macOS, Windows, Linux, iOS, Android |
+| 📚 **Rime-Compatible** | ✅ Ready | Use Rime schemas & dictionaries |
+| 🧠 **Smart Learning** | 📋 Planned | Word frequency learning |
+| 🔄 **OpenCC** | 📋 Planned | Simplified/Traditional conversion |
 
-- `examples/`: Example applications demonstrating usage of the framework.
+---
 
-- `tests/`: Contains integration tests and fixtures.
+## 🚀 Quick Start
 
-- `docs/`: Documentation including design and API references.
-
-## Getting Started
-
-To get started with the LingCode project, clone the repository and build the project using Cargo:
+### Installation
 
 ```bash
-git clone <repository-url>
+# Clone the repository
+git clone https://github.com/xiaoburen/LingCode.git
 cd LingCode
-cargo build --workspace
+
+# Build CLI demo
+cargo build -p lingcode-cli --release
+
+# Run
+./target/release/lingcode
 ```
 
-### Setting Up Resources
+### Demo
 
-LingCode uses resources from the Rime input method ecosystem. To set up resources:
+```
+╔══════════════════════════════════════════╗
+║       📝 LingCode CLI Demo v0.1          ║
+╠══════════════════════════════════════════╣
+║  Type pinyin, press space/number to select║
+║  Backspace: delete | Esc: cancel         ║
+╚══════════════════════════════════════════╝
 
-```bash
-# Clone Rime resource repositories
-cd resources
-git clone https://github.com/rime/rime-prelude.git
-git clone https://github.com/rime/rime-luna-pinyin.git
-git clone https://github.com/rime/rime-double-pinyin.git
-
-# Copy resource files to appropriate directories
-cp rime-prelude/*.yaml schemas/
-cp rime-luna-pinyin/*.yaml schemas/
-cp rime-luna-pinyin/*.yaml dicts/
-cp rime-double-pinyin/*.yaml schemas/
+Input: zhongwen
+Candidates: [1. 中文] 2. 中问 3. 中闻
+Press 1 to commit: 中文
 ```
 
-For detailed information about resources, see [docs/RESOURCES.md](docs/RESOURCES.md).
+---
 
-## Contributing
+## 📁 Project Structure
 
-Contributions are welcome! Please open an issue or submit a pull request for any enhancements or bug fixes.
+```
+LingCode/
+├── crates/
+│   ├── core/          # Core types and definitions
+│   ├── engine/        # Input method engine (state machine)
+│   ├── pinyin/        # Pinyin engine
+│   ├── double-pinyin/ # Double pinyin support
+│   ├── dict/          # Dictionary management (Rime-ice)
+│   ├── converters/    # OpenCC integration
+│   ├── ffi/           # FFI bindings
+│   └── cli/           # Command-line demo
+├── frontends/
+│   └── desktop/
+│       ├── macos/     # macOS input method
+│       ├── windows/   # Windows input method
+│       └── linux/     # Linux input method
+└── resources/
+    └── dict/          # Dictionary files (Rime-ice)
+```
 
-## Acknowledgments
+---
 
-This project leverages resources from the [Rime Input Method Engine](https://rime.im/) community:
-- [rime-prelude](https://github.com/rime/rime-prelude) - Basic configurations
-- [rime-luna-pinyin](https://github.com/rime/rime-luna-pinyin) - Pinyin dictionaries and schemas
-- [rime-double-pinyin](https://github.com/rime/rime-double-pinyin) - Double Pinyin schemas
-- [rime-opencc](https://github.com/rime/rime-opencc) - OpenCC conversion data
+## 🛠️ Development Status
 
-## License
+### Phase 1: Core Foundation ✅
+- [x] Core types and definitions
+- [x] Engine state machine (Idle→Composing→Selecting)
+- [x] Simplified Pinyin engine
+- [x] CLI demo with real input
 
-This project is licensed under the MIT License. See the LICENSE file for more details.
+### Phase 2: Feature Enhancement 🚧
+- [x] Load Rime-ice dictionary (8105 chars)
+- [ ] Load full Rime-ice dictionaries
+- [ ] Double pinyin support
+- [ ] Word frequency learning
+
+### Phase 3: Frontend Development 📋
+- [ ] macOS input method
+- [ ] Windows input method
+- [ ] Linux input method
+
+---
+
+## 📚 Dictionary
+
+LingCode uses **[Rime-ice](https://github.com/iDvel/rime-ice)** as the default dictionary:
+
+- **8105.dict.yaml** - 8105 standard Chinese characters
+- **base.dict.yaml** - Base vocabulary
+- **ext.dict.yaml** - Extended vocabulary
+- **tencent.dict.yaml** - Tencent word list
+
+Dictionary location: `~/Library/Rime/cn_dicts/` (macOS)
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit an [Issue](https://github.com/xiaoburen/LingCode/issues) or [Pull Request](https://github.com/xiaoburen/LingCode/pulls).
+
+---
+
+## 🙏 Acknowledgments
+
+This project is inspired by and compatible with:
+
+- [Rime Input Method](https://rime.im/) - The ultimate input method framework
+- [Rime-ice](https://github.com/iDvel/rime-ice) - A comprehensive Rime dictionary
+
+---
+
+## 📄 License
+
+Licensed under the [Apache License 2.0](./LICENSE).
+
+---
+
+<div align="center">
+
+**LingCode - Making Chinese input smoother** 🦀
+
+[<img src="https://img.shields.io/github/stars/xiaoburen/LingCode?style=social">](https://github.com/xiaoburen/LingCode)
+[<img src="https://img.shields.io/github/forks/xiaoburen/LingCode?style=social">](https://github.com/xiaoburen/LingCode)
+
+</div>
