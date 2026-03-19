@@ -2,7 +2,7 @@
 
 <img src="./assets/logo.svg" width="120" height="120" alt="LingCode Logo">
 
-# 🦀 LingCode 灵码输入法
+# LingCode 灵码输入法
 
 **A Rust-based Rime-compatible input method framework**
 
@@ -146,7 +146,9 @@ Licensed under the [Apache License 2.0](./LICENSE).
 
 <div align="center">
 
-**LingCode - Making Chinese input smoother** 🦀
+<img src="./assets/logo.svg" width="40" height="40" alt="LingCode Logo">
+
+**LingCode - Making Chinese input smoother**
 
 [<img src="https://img.shields.io/github/stars/xiaoburen/LingCode?style=social">](https://github.com/xiaoburen/LingCode)
 [<img src="https://img.shields.io/github/forks/xiaoburen/LingCode?style=social">](https://github.com/xiaoburen/LingCode)

@@ -2,7 +2,7 @@
 
 <img src="./assets/logo.svg" width="120" height="120" alt="灵码输入法 Logo">
 
-# 🦀 灵码输入法 LingCode
+# 灵码输入法 LingCode
 
 **基于 Rust 的 Rime 兼容输入法框架**
 
@@ -146,7 +146,9 @@ LingCode/
 
 <div align="center">
 
-**灵码输入法 - 让中文输入更流畅** 🦀
+<img src="./assets/logo.svg" width="40" height="40" alt="灵码输入法 Logo">
+
+**灵码输入法 - 让中文输入更流畅**
 
 [<img src="https://img.shields.io/github/stars/xiaoburen/LingCode?style=social">](https://github.com/xiaoburen/LingCode)
 [<img src="https://img.shields.io/github/forks/xiaoburen/LingCode?style=social">](https://github.com/xiaoburen/LingCode)
