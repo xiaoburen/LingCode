@@ -95,16 +95,20 @@ LingCode/
 - [x] Simplified Pinyin engine
 - [x] CLI demo with real input
 
-### Phase 2: Feature Enhancement 🚧
-- [x] Load Rime-ice dictionary (8105 chars)
-- [ ] Load full Rime-ice dictionaries
-- [ ] Double pinyin support
-- [ ] Word frequency learning
+### Phase 2: Feature Enhancement ✅
+- [x] Load Rime-ice dictionaries (8105 chars + base + ext + tencent)
+- [x] Double pinyin support (Flypy, Natural Code, MS Pinyin)
+- [x] Word frequency learning with UserDict
+- [x] Simplified/Traditional conversion (OpenCC)
 
-### Phase 3: Frontend Development 📋
-- [ ] macOS input method
-- [ ] Windows input method
-- [ ] Linux input method
+### Phase 3: Cross-Platform Frontend 🚧
+- [x] FFI bindings (C API)
+- [x] macOS input method (InputMethodKit)
+- [x] Connect to real Rust engine via FFI
+- [ ] Windows input method (TSF)
+- [ ] Linux input method (IBus/Fcitx)
+
+**Status**: Core library complete, macOS frontend framework ready. Project paused for testing.
 
 ---
 

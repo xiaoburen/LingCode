@@ -17,6 +17,14 @@ let package = Package(
             dependencies: [],
             swiftSettings: [
                 .unsafeFlags(["-I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/InputMethodKit.framework/Headers"])
+            ],
+            linkerSettings: [
+                .unsafeFlags([
+                    "-L../../../../../../target/debug",
+                    "-llingcode_ffi",
+                    "-framework", "InputMethodKit",
+                    "-framework", "Carbon"
+                ])
             ]
         ),
     ]

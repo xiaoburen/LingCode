@@ -1,12 +1,17 @@
 [package]
-name = "ffi"
+name = "lingcode-ffi"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-crate-type = ["cdylib"]
+name = "lingcode_ffi"
+crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
-# Add dependencies here as needed for FFI functionality
-# Example:
-# libc = "0.2"
+lingcode-pinyin = { path = "../pinyin" }
+lingcode-dict = { path = "../dict" }
+lingcode-double-pinyin = { path = "../double-pinyin" }
+libc = "0.2"
+
+[build-dependencies]
+cbindgen = "0.27"
