@@ -132,6 +132,8 @@ LingCode/
 - [Rime 输入法](https://rime.im/) - 最棒的输入法框架
 - [雾凇拼音](https://github.com/iDvel/rime-ice) - 一个全面的 Rime 词库
 
+本项目使用 [OpenClaw](https://github.com/openclaw/openclaw) 开发 - 一个用于长期任务管理的个人 AI 助手框架。
+
 ---
 
 ## 📄 许可证

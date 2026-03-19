@@ -132,6 +132,8 @@ This project is inspired by and compatible with:
 - [Rime Input Method](https://rime.im/) - The ultimate input method framework
 - [Rime-ice](https://github.com/iDvel/rime-ice) - A comprehensive Rime dictionary
 
+This project is developed using [OpenClaw](https://github.com/openclaw/openclaw) - A personal AI assistant framework for long-running agent workflows.
+
 ---
 
 ## 📄 License
