@@ -6,6 +6,7 @@
 - **最后更新**: 2026-03-19 15:02
 
 ## 已完成任务
+- [2026-03-19] 选项A: 优化多词库集成，SimplifiedPinyinEngine 现在直接使用 RimeDictLoader 的多词库加载功能，支持 `with_rime_dicts()` 和 `has_external_dict()` 等新方法
 - [2026-03-19] 选项A: 实现多词库加载支持，RimeDictLoader 现在可以加载多个词库文件（8105/base/ext/tencent），支持词库来源优先级管理
 - [2026-03-19] 下一阶段: 创建了中文 README，实现了 RimeDictLoader 加载雾凇拼音词库，CLI 现在可以加载并使用 8105 字表词库，候选词更丰富准确
 - [2026-03-19] 下一阶段: 创建了 lingcode-cli 命令行演示程序，可以真正输入中文，测试验证 zhongwen→中文、nihao→你好 正常工作

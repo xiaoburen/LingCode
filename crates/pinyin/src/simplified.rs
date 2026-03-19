@@ -8,7 +8,7 @@ use lingcode_core::{
     error::{Result},
     types::SchemeType,
 };
-use lingcode_dict::RimeDictLoader;
+use lingcode_dict::{RimeDictLoader, DictStats};
 use std::collections::HashMap;
 use std::path::Path;
 
@@ -16,10 +16,12 @@ use std::path::Path;
 pub struct SimplifiedPinyinEngine {
     /// 拼音到汉字的映射表（内置基础词典）
     pinyin_dict: HashMap<String, Vec<(Candidate, u32)>>,
-    /// 雾凇拼音词库加载器
+    /// 雾凇拼音词库加载器（支持多词库）
     rime_loader: Option<RimeDictLoader>,
     /// 词库路径
     dict_path: Option<String>,
+    /// 是否已加载外部词库
+    has_external_dict: bool,
 }
 
 impl SimplifiedPinyinEngine {
@@ -29,36 +31,76 @@ impl SimplifiedPinyinEngine {
             pinyin_dict: HashMap::new(),
             rime_loader: None,
             dict_path: None,
+            has_external_dict: false,
         };
         engine.load_builtin_dict();
         engine
     }
 
-    /// 从雾凇拼音词库创建引擎
-    pub fn with_rime_dict(dict_path: &str) -> Self {
+    /// 从雾凇拼音词库目录创建引擎（加载多词库）
+    pub fn with_rime_dicts(dict_dir: &str) -> Self {
         let mut engine = Self::new();
-        engine.load_rime_dict(dict_path);
+        engine.load_rime_dicts(dict_dir);
         engine
     }
 
-    /// 加载雾凇拼音词库
-    pub fn load_rime_dict(&mut self, dict_path: &str) {
+    /// 加载雾凇拼音多词库
+    pub fn load_rime_dicts(&mut self, dict_dir: &str) {
         let mut loader = RimeDictLoader::new();
-        let path = Path::new(dict_path);
-        
-        if path.exists() {
-            match loader.load_from_file(path) {
-                Ok(_) => {
-                    log::info!("已加载词库: {}", dict_path);
-                    self.rime_loader = Some(loader);
-                    self.dict_path = Some(dict_path.to_string());
+        let path = Path::new(dict_dir);
+
+        if path.exists() && path.is_dir() {
+            match loader.load_rime_ice_dicts(path) {
+                Ok(summary) => {
+                    if summary.total_entries > 0 {
+                        log::info!("已加载 {} 条词条", summary.total_entries);
+                        for (name, count, source) in &summary.loaded {
+                            let source_name = match source {
+                                lingcode_dict::DictSource::Base => "基础",
+                                lingcode_dict::DictSource::Ext => "扩展",
+                                lingcode_dict::DictSource::Tencent => "腾讯",
+                                lingcode_dict::DictSource::Custom => "自定义",
+                            };
+                            log::info!("  • {}: {} 条 ({})", name, count, source_name);
+                        }
+                        self.rime_loader = Some(loader);
+                        self.dict_path = Some(dict_dir.to_string());
+                        self.has_external_dict = true;
+                    } else {
+                        log::warn!("未找到词库文件");
+                    }
                 }
                 Err(e) => {
                     log::warn!("加载词库失败: {}, 使用内置词典", e);
                 }
             }
         } else {
-            log::warn!("词库文件不存在: {}, 使用内置词典", dict_path);
+            log::warn!("词库目录不存在: {}, 使用内置词典", dict_dir);
+        }
+    }
+
+    /// 加载雾凇拼音词库（兼容旧接口，加载单个文件）
+    pub fn load_rime_dict(&mut self, dict_path: &str) {
+        let path = Path::new(dict_path);
+        if path.is_dir() {
+            // 如果是目录，使用新的多词库加载
+            self.load_rime_dicts(dict_path);
+        } else if path.exists() {
+            // 如果是文件，加载单个文件
+            let mut loader = RimeDictLoader::new();
+            match loader.load_from_file(path) {
+                Ok(_) => {
+                    log::info!("已加载词库: {}", dict_path);
+                    self.rime_loader = Some(loader);
+                    self.dict_path = Some(dict_path.to_string());
+                    self.has_external_dict = true;
+                }
+                Err(e) => {
+                    log::warn!("加载词库失败: {}, 使用内置词典", e);
+                }
+            }
+        } else {
+            log::warn!("词库路径不存在: {}, 使用内置词典", dict_path);
         }
     }
 
@@ -160,6 +202,16 @@ impl SimplifiedPinyinEngine {
             .entry(pinyin.to_string())
             .or_insert_with(Vec::new)
             .push((candidate, weight));
+    }
+
+    /// 检查是否已加载外部词库
+    pub fn has_external_dict(&self) -> bool {
+        self.has_external_dict
+    }
+
+    /// 获取词库统计信息
+    pub fn dict_stats(&self) -> Option<DictStats> {
+        self.rime_loader.as_ref().map(|loader| loader.stats())
     }
 }
 
